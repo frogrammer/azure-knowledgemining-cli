@@ -8,8 +8,22 @@
              "name": "Main",
              "type": "python",
              "request": "launch",
-             "module": "cli",
+             "module": "azkm",
              "args": [], 
-         }
+         },
+         {
+            "name": "Init Test KM",
+            "type": "python",
+            "request": "launch",
+            "module": "azkm",
+            "args": ["init", "test_km", "UK South"]
+        },
+        {
+           "name": "Destroy Test KM",
+           "type": "python",
+           "request": "launch",
+           "module": "azkm",
+           "args": ["destroy", "test_km"]
+       }
     ]
 }
