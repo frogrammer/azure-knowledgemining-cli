@@ -22,7 +22,7 @@ setup(
     test_suite='',
     entry_points={
         'console_scripts': [
-            'azkm = cli.__main__:main',
+            'azkm = azkm.__main__:main',
         ],
     },
 )
