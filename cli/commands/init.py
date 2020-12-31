@@ -1,6 +1,7 @@
 from constructs import Construct
 from cdktf import App, TerraformStack, TerraformOutput, Token
 from azurerm import AzurermProvider, ResourceGroup, VirtualNetwork
+import firehelper
 
 class MyStack(TerraformStack):
     def __init__(self, scope: Construct, ns: str):
@@ -34,7 +35,14 @@ class MyStack(TerraformStack):
             value=example_vnet.id
         )
 
-app = App()
-MyStack(app, "python-azure")
+def dothething():
+    app = App()
+    MyStack(app, "python-azure")
 
-app.synth()
+    app.synth()
+
+init_cmd = {
+    'init': dothething
+}
+
+firehelper.CommandRegistry().register(init_cmd)
