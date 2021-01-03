@@ -27,3 +27,7 @@ def get_providers():
     if not os.path.isdir('{0}/azkm/providers/azurerm'.format(osutil.ROOT_DIR)):
         osutil.chdir('azkm')
         osutil.run_subprocess(['cdktf', 'get'])
+
+def install():
+    check_cmd()
+    get_providers()
