@@ -1,9 +1,12 @@
 import shutil
 from tabulate import tabulate
+from azkm.utils import osutil
+import os
 
 prereq_cmd = [
     'terraform',
-    'kubectl'
+    'kubectl',
+    'cdktf'
 ]
 
 def check_cmd():
@@ -19,3 +22,8 @@ def confirm_cmd():
     print('Pre-requisites:')
     print(tabulate(prereqs, headers=['cmd', 'path']))
     print('\r\n')
+
+def get_providers():
+    if not os.path.isdir('{0}/azkm/providers/azurerm'.format(osutil.ROOT_DIR)):
+        osutil.chdir('azkm')
+        osutil.run_subprocess(['cdktf', 'get'])

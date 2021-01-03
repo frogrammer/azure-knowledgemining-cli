@@ -1,7 +1,7 @@
 from typing import NamedTuple
 from constructs import Construct
 from cdktf import App, TerraformStack, TerraformOutput, Token
-from azurerm import AzurermProvider, ResourceGroup, StorageAccount, CognitiveAccount, SearchService, KubernetesCluster
+from azkm.providers.azurerm import AzurermProvider, ResourceGroup, StorageAccount, CognitiveAccount, SearchService, KubernetesCluster
 
 import azkm.utils.osutil as osutil
 

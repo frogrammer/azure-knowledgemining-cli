@@ -1,6 +1,5 @@
 """azkm CLI entry point."""
 
-from .commands import *  # noqa
 from .flight_checks import prereqs
 import firehelper
 import sys
@@ -12,9 +11,13 @@ def main():
         prereqs.confirm_cmd()
     else:
         prereqs.check_cmd()
-        
-    firehelper.start_fire_cli('azkm')
+    
+    prereqs.get_providers()
+    start_cli()
 
+def start_cli():
+    from .commands import init, destroy  # noqa
+    firehelper.start_fire_cli('azkm')
 
 if __name__ == '__main__':
     main()

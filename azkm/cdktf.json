@@ -1,0 +1,6 @@
+{
+    "language": "python",
+    "app": "python ./__main__.py",
+    "terraformProviders": ["azurerm@~> 2.0.0"],
+    "codeMakerOutput": "providers"
+  }
