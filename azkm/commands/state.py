@@ -5,9 +5,13 @@ from tabulate import tabulate
 def read(km_id: str):
     print(tabulate(tf.get_state(km_id)['outputs']))
 
+def list_env():
+    print(tabulate([[env] for env in tf.get_envs()]))
+
 state_cmd = {
     'state': {
-        'read': read
+        'read': read,
+        'list': list_env
     }
 }
 

@@ -26,11 +26,18 @@
            "args": ["destroy", "test_km"]
        },
         {
-           "name": "Read State Test KM",
-           "type": "python",
-           "request": "launch",
-           "module": "azkm",
-           "args": ["state", "read", "test_km"]
-       }
+            "name": "Read State Test KM",
+            "type": "python",
+            "request": "launch",
+            "module": "azkm",
+            "args": ["state", "read", "test_km"]
+        },
+        {
+            "name": "List Envs",
+            "type": "python",
+            "request": "launch",
+            "module": "azkm",
+            "args": ["state", "list"]
+        }
     ]
 }

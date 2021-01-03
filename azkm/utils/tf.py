@@ -9,12 +9,12 @@ from azkm.providers.azurerm import (AzurermProvider, CognitiveAccount,
 from cdktf import App, TerraformOutput, TerraformStack, Token, TerraformVariable
 from constructs import Construct
 
+AZKM_DIR = os.path.join(os.path.expanduser ('~'), '.azkm')
 
 def __get_out_dir(km_id: str):
-    azkm_dir = os.path.join(os.path.expanduser ('~'), '.azkm')
-    out_dir = os.path.join(os.path.expanduser ('~'), '.azkm', '{0}.out'.format(km_id))
-    if not os.path.isdir(azkm_dir):
-        os.mkdir(azkm_dir)
+    out_dir = os.path.join(AZKM_DIR, '{0}.out'.format(km_id))
+    if not os.path.isdir(AZKM_DIR):
+        os.mkdir(AZKM_DIR)
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
     return out_dir
@@ -161,3 +161,6 @@ def get_state(km_id: str):
     with open(os.path.join(out_dir,'terraform.tfstate'), 'r') as f:
         tfstate = json.loads(f.read())
         return tfstate
+
+def get_envs():
+    return [d.replace('.out', '') for d in os.listdir(AZKM_DIR)]
