@@ -105,13 +105,9 @@ class KmStack(TerraformStack):
 
         TerraformOutput(self, 'rg_id', value=km_rg.id)
         TerraformOutput(self, 'storage_id', value=km_storage.id)
-        TerraformOutput(self, 'storage_conn', value=km_storage.primary_connection_string)
         TerraformOutput(self, 'text_endpoint', value=km_text.endpoint)
-        TerraformOutput(self, 'text_key', value=km_text.primary_access_key)
         TerraformOutput(self, 'img_endpoint', value=km_img.endpoint)
-        TerraformOutput(self, 'img_key', value=km_img.primary_access_key)
         TerraformOutput(self, 'search_name', value=km_search.name)
-        TerraformOutput(self, 'search_key', value=km_search.primary_key)
 
         if DEPLOY_AKS:
             km_aks = KubernetesCluster(self, _name_resource('aks'), 
