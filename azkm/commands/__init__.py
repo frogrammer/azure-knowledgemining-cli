@@ -1,1 +1,1 @@
-__all__ = ['destroy', 'init']
+__all__ = ['destroy', 'init', 'state']
