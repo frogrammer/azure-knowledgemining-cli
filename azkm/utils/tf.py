@@ -4,6 +4,7 @@ from cdktf import App, TerraformStack, TerraformOutput, Token
 from azkm.providers.azurerm import AzurermProvider, ResourceGroup, StorageAccount, CognitiveAccount, SearchService, KubernetesCluster
 
 import azkm.utils.osutil as osutil
+import os
 
 def _name_resource(km_id: str, prefix: str):
     illegal_char = ['_', '-', ' ']
@@ -74,29 +75,31 @@ class KmStack(TerraformStack):
         TerraformOutput(self, 'km_id', value=km_search.id)
         TerraformOutput(self, 'km_key', value=km_search.primary_key)
 
+
+def __get_out_dir(km_id: str):
+    return os.path.join(osutil.ROOT_DIR, '{0}.out'.format(km_id))
  
 def synth_km(km_id: str, region: str):
-    out_dir = '{0}.out'.format(km_id)
-    app = App(outdir=out_dir)
+    app = App(outdir=__get_out_dir())
     km_stack = KmStack(app, km_id)
     km_stack.generate_baseline(km_id, region, {'km_id': km_id})
     app.synth()
-    return out_dir
+    return __get_out_dir()
 
 
 def init(km_id: str):
     out_dir = '{0}.out'.format(km_id)
-    osutil.chdir(out_dir)
+    osutil.chdir(__get_out_dir())
     osutil.run_subprocess(['terraform', 'init', '--upgrade'])
 
 
 def apply(km_id: str):
     out_dir = '{0}.out'.format(km_id)
-    osutil.chdir(out_dir)
+    osutil.chdir(__get_out_dir())
     osutil.run_subprocess(['terraform', 'apply'])
 
 
 def destroy(km_id: str):
     out_dir = '{0}.out'.format(km_id)
-    osutil.chdir(out_dir)
+    osutil.chdir(__get_out_dir())
     osutil.run_subprocess(['terraform', 'destroy'])
