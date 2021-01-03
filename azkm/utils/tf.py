@@ -99,5 +99,4 @@ def apply(out_dir: str):
 
 def destroy(km_id: str):
     out_dir = '{0}.out'.format(km_id)
-    osutil.chdir(__get_out_dir())
     osutil.run_subprocess(['terraform', 'destroy'])
