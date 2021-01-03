@@ -30,3 +30,28 @@ setup(
     },
     include_package_data=True
 )
+
+setup(
+    name='azkm',
+    version=0.8,
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://github.com/frogrammer/azure-knowledgemining-cli',
+    author='Luke Vinton',
+    author_email='luke0vinton@gmail.com',
+    license='Apache 2.0',
+    packages=find_packages(),
+    install_requires=['fire', 'azure-cli==2.14.0', 'azure-mgmt-core==1.2.0', 'azure-storage-blob', 'fire-cli-helper', 'cdktf', 'tabulate'],
+    tests_require=[],
+    classifiers=[],
+    test_suite='',
+    entry_points={
+        'console_scripts': [
+            'azkm = azkm.__main__:main',
+        ]
+    },
+    package_data={
+        '': ['*.json', '*.tgz']
+    },
+    include_package_data=True
+)
