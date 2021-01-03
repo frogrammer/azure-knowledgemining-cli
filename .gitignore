@@ -133,4 +133,4 @@ dmypy.json
 
 # terraform
 *.out
-azkm/providers/azurerm
+# azkm/providers/azurerm

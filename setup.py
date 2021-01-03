@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='azure-knowledgemining-cli',
-    version=0.4,
+    version=0.5,
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/frogrammer/azure-knowledgemining-cli',
@@ -23,9 +23,10 @@ setup(
     entry_points={
         'console_scripts': [
             'azkm = azkm.__main__:main',
-        ],
+        ]
     },
-    install_scripts={
-        'install': 'azkm.flight_checks:install'
-    }
+    package_data={
+        '': ['*.json', '*.tgz']
+    },
+    include_package_data=True
 )

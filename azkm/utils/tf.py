@@ -87,7 +87,7 @@ def synth_km(km_id: str, region: str):
 def init(km_id: str):
     out_dir = '{0}.out'.format(km_id)
     osutil.chdir(out_dir)
-    osutil.run_subprocess(['terraform', 'init'])
+    osutil.run_subprocess(['terraform', 'init', '--upgrade'])
 
 
 def apply(km_id: str):
