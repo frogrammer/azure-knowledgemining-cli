@@ -12,7 +12,7 @@ prereq_cmd = [
 cdktf_cfg = {
     "language": "python",
     "app": "python ./__main__.py",
-    "terraformProviders": ["azurerm@~> 2.0.0"],
+    "terraformProviders": ["azurerm@~> 2.40.0"],
     "codeMakerOutput": "providers"
 }
 

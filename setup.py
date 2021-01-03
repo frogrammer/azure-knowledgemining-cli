@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='azure-knowledgemining-cli',
-    version=0.96,
+    version=0.97,
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/frogrammer/azure-knowledgemining-cli',
