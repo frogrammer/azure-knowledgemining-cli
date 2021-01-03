@@ -55,7 +55,7 @@ class KmStack(TerraformStack):
         res_suf = TerraformVariable(self, 'env_suffix', type='string', default=_clean_name(vars['env_suffix']))
 
         def _name_resource(res: str):
-            return _clean_name('{0}{1}{2}'.format(env_id.string_value, res, res_suf.string_value))
+            return '{0}{1}{2}'.format(env_id.string_value, _clean_name(res), res_suf.string_value)
 
 
         AzurermProvider(self, "Azurerm",
