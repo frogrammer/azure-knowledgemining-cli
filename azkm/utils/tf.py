@@ -31,7 +31,7 @@ def _get_vars(km_id: str):
     if not os.path.isfile(vars_file):
         return {
             'env_id': km_id,
-            'res_suffix': str(random.randint(0, 999999))
+            'env_suffix': str(random.randint(0, 999999))
         }
     else:
         with open(vars_file, 'r') as f:
