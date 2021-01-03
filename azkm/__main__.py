@@ -3,6 +3,7 @@
 from .flight_checks import prereqs
 import firehelper
 import sys
+from .commands import *  # noqa
 
 def main():
     """azkm CLI.
@@ -11,12 +12,10 @@ def main():
         prereqs.confirm_cmd()
     else:
         prereqs.check_cmd()
-    
-    # prereqs.get_providers()
+
     start_cli()
 
 def start_cli():
-    from .commands import init, destroy  # noqa
     firehelper.start_fire_cli('azkm')
 
 if __name__ == '__main__':
