@@ -80,22 +80,20 @@ def __get_out_dir(km_id: str):
     return os.path.join(osutil.ROOT_DIR, '{0}.out'.format(km_id))
  
 def synth_km(km_id: str, region: str):
-    app = App(outdir=__get_out_dir())
+    app = App(outdir=__get_out_dir(km_id))
     km_stack = KmStack(app, km_id)
     km_stack.generate_baseline(km_id, region, {'km_id': km_id})
     app.synth()
-    return __get_out_dir()
+    return app.outdir
 
 
-def init(km_id: str):
-    out_dir = '{0}.out'.format(km_id)
-    osutil.chdir(__get_out_dir())
+def init(out_dir: str):
+    osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'init', '--upgrade'])
 
 
-def apply(km_id: str):
-    out_dir = '{0}.out'.format(km_id)
-    osutil.chdir(__get_out_dir())
+def apply(out_dir: str):
+    osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'apply'])
 
 
