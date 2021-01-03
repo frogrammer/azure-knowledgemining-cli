@@ -6,10 +6,11 @@ import azkm.utils.osutil as osutil
 from azkm.providers.azurerm import (AzurermProvider, CognitiveAccount,
                                     KubernetesCluster, ResourceGroup,
                                     SearchService, StorageAccount)
-from cdktf import App, TerraformOutput, TerraformStack, Token, TerraformVariable
+from cdktf import App, TerraformOutput, TerraformStack, TerraformVariable
 from constructs import Construct
 
 AZKM_DIR = os.path.join(os.path.expanduser ('~'), '.azkm')
+DEPLOY_AKS = False
 
 def __get_out_dir(km_id: str):
     out_dir = os.path.join(AZKM_DIR, '{0}.out'.format(km_id))
@@ -54,7 +55,7 @@ class KmStack(TerraformStack):
         res_suf = TerraformVariable(self, 'env_suffix', type='string', default=_clean_name(vars['env_suffix']))
 
         def _name_resource(res: str):
-            return '{0}{1}{2}'.format(env_id.string_value, res, res_suf.string_value)
+            return _clean_name('{0}{1}{2}'.format(env_id.string_value, res, res_suf.string_value))
 
 
         AzurermProvider(self, "Azurerm",
@@ -102,22 +103,6 @@ class KmStack(TerraformStack):
             sku='standard'
             )
 
-        km_aks = KubernetesCluster(self, _name_resource('aks'), 
-            name=_name_resource('aks'),
-            depends_on=[km_rg],
-            resource_group_name=km_rg.name,
-            location=km_rg.location, 
-            default_node_pool=[{
-                'name': 'default',
-                'nodeCount': 1,
-                'vmSize': 'Standard_D4s_v3',
-            }],
-            dns_prefix='azkm',
-            identity=[{
-                'type': 'SystemAssigned'
-            }]
-            )
-
         TerraformOutput(self, 'rg_id', value=km_rg.id)
         TerraformOutput(self, 'storage_id', value=km_storage.id)
         TerraformOutput(self, 'storage_conn', value=km_storage.primary_connection_string)
@@ -127,8 +112,24 @@ class KmStack(TerraformStack):
         TerraformOutput(self, 'img_key', value=km_img.primary_access_key)
         TerraformOutput(self, 'search_name', value=km_search.name)
         TerraformOutput(self, 'search_key', value=km_search.primary_key)
-        TerraformOutput(self, 'aks_name', value=km_aks.name)
 
+        if DEPLOY_AKS:
+            km_aks = KubernetesCluster(self, _name_resource('aks'), 
+                name=_name_resource('aks'),
+                depends_on=[km_rg],
+                resource_group_name=km_rg.name,
+                location=km_rg.location, 
+                default_node_pool=[{
+                    'name': 'default',
+                    'nodeCount': 1,
+                    'vmSize': 'Standard_D4s_v3',
+                }],
+                dns_prefix='azkm',
+                identity=[{
+                    'type': 'SystemAssigned'
+                }]
+            )
+            TerraformOutput(self, 'aks_name', value=km_aks.name)
 
 
 def synth_km(km_id: str, region: str):
@@ -138,18 +139,20 @@ def synth_km(km_id: str, region: str):
     app.synth()
     return app.outdir
 
-
 def init(km_id: str):
     out_dir = __get_out_dir(km_id)
     osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'init', '--upgrade'])
 
+def plan(km_id: str):
+    out_dir = __get_out_dir(km_id)
+    osutil.chdir(out_dir)
+    osutil.run_subprocess(['terraform', 'plan'])
 
 def apply(km_id: str):
     out_dir = __get_out_dir(km_id)
     osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'apply'])
-
 
 def destroy(km_id: str):
     out_dir = __get_out_dir(km_id)

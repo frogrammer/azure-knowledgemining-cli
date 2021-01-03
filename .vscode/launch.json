@@ -12,11 +12,18 @@
              "args": [], 
          },
          {
-            "name": "Init Test KM",
+            "name": "Plan Test KM",
             "type": "python",
             "request": "launch",
             "module": "azkm",
-            "args": ["init", "test_km", "UK South"]
+            "args": ["init", "plan", "test_km", "UK South"]
+        },
+        {
+            "name": "Deploy Test KM",
+            "type": "python",
+            "request": "launch",
+            "module": "azkm",
+            "args": ["init", "deploy", "test_km", "UK South"]
         },
         {
            "name": "Destroy Test KM",
