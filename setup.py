@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='azure-knowledgemining-cli',
-    version=0.95,
+    version=0.96,
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/frogrammer/azure-knowledgemining-cli',
@@ -16,7 +16,7 @@ setup(
     author_email='luke0vinton@gmail.com',
     license='Apache 2.0',
     packages=find_packages(),
-    install_requires=['fire', 'azure-cli==2.14.0', 'azure-mgmt-core==1.2.0', 'azure-storage-blob', 'fire-cli-helper', 'cdktf', 'tabulate'],
+    install_requires=['fire', 'azure-cli', 'azure-mgmt-core', 'azure-storage-blob', 'fire-cli-helper', 'cdktf', 'tabulate'],
     tests_require=[],
     classifiers=[],
     test_suite='',
