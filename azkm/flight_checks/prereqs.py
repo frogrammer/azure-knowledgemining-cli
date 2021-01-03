@@ -2,12 +2,19 @@ import shutil
 from tabulate import tabulate
 from azkm.utils import osutil
 import os
+import json
 
 prereq_cmd = [
     'terraform',
-    'kubectl',
-    'cdktf'
+    'kubectl'
 ]
+
+cdktf_cfg = {
+    "language": "python",
+    "app": "python ./__main__.py",
+    "terraformProviders": ["azurerm@~> 2.0.0"],
+    "codeMakerOutput": "providers"
+}
 
 def check_cmd():
     prereq_paths = []
@@ -25,7 +32,10 @@ def confirm_cmd():
 
 def get_providers():
     if not os.path.isdir('{0}/azkm/providers/azurerm'.format(osutil.ROOT_DIR)):
+        assert shutil.which('cdktf') is not None,  'Please install cdktf: npm i cdktf-cli'
         osutil.chdir('azkm')
+        with open('cdktf.json', 'w') as cfg:
+            cfg.write(json.dumps(cdktf_cfg))
         osutil.run_subprocess(['cdktf', 'get'])
 
 def install():

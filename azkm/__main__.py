@@ -12,7 +12,7 @@ def main():
     else:
         prereqs.check_cmd()
     
-    prereqs.get_providers()
+    # prereqs.get_providers()
     start_cli()
 
 def start_cli():
