@@ -134,3 +134,4 @@ dmypy.json
 # terraform
 *.out
 # azkm/providers/azurerm
+*.tfstate

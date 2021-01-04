@@ -1,7 +1,4 @@
 fire
 fire-cli-helper
-azure-cli
-azure-mgmt-core
-azure-storage-blob
 cdktf
 tabulate
