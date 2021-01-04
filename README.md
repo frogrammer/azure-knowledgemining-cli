@@ -18,3 +18,8 @@ To use on azure cloud shell:
 ```bash
 wget https://raw.githubusercontent.com/frogrammer/azure-knowledgemining-cli/main/cloudshell-install.sh && . cloudshell-install.sh
 ```
+##pre-requisites
+ - kubectl 
+ - terraform
+ - cdktf [OPTIONAL to generate azurerm provider CDK]
+ - az cli
