@@ -21,5 +21,6 @@ wget https://raw.githubusercontent.com/frogrammer/azure-knowledgemining-cli/main
 ## pre-requisites
  - kubectl 
  - terraform
+ - nodejs > 0.1.15 or a nodejs virtual environment
  - cdktf [OPTIONAL to generate azurerm provider CDK]
  - az cli
