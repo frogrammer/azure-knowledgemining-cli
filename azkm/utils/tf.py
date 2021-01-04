@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import shutil
 
 import azkm.utils.osutil as osutil
 from azkm.providers.azurerm import (AzurermProvider, CognitiveAccount,
@@ -154,6 +155,7 @@ def destroy(km_id: str):
     out_dir = __get_out_dir(km_id)
     osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'destroy'])
+    shutil.rmtree(out_dir)
 
 def get_state(km_id: str):
     out_dir = __get_out_dir(km_id)
