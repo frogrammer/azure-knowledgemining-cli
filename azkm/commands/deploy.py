@@ -52,7 +52,7 @@ def deploy_pipeline(pipeline: str, km_id: str, pipeline_url = PIPELINE_URL):
     pipeline_resources = _load_pipeline(pipeline_url, pipeline, env_state)
     
     for p in PIPELINE_COMPONENTS:
-        cogsearch.create_resource(p, pipeline, env_state['azurerm_search_service'], pipeline_resources[p])
+        cogsearch.create_resource(p, pipeline, env_state['azurerm_search_service'][0], pipeline_resources[p])
         
     print('\r\nDeployed imagenet pipeline to environment {0}.'.format(km_id))
 

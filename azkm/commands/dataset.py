@@ -28,7 +28,7 @@ def deploy_imagenet(km_id: str, synset_id: str = None, num_images: int = 1000):
     """
     try:
         env_state = tf.get_state(km_id)
-        storage_conn = env_state['azurerm_storage_account']['primary_blob_connection_string']
+        storage_conn = env_state['azurerm_storage_account'][0]['primary_blob_connection_string']
     except Exception as e:
         raise Exception('Error finding storage for environment {0}.'.format(km_id))
     img_count = 0
@@ -49,7 +49,7 @@ def deploy_imagenet(km_id: str, synset_id: str = None, num_images: int = 1000):
                 try:
                     counter = f'{img_count}/{num_images}'
                     spaces = 16 - len(counter)
-                    stdout_print(f'{img_count}/{num_images}{"".join([" " for i in range(spaces)])}{img_url}')
+                    stdout_print(f'{img_count}/{num_images}{"".join([" " for i in range(spaces)])}{img_url[:50]}')
                     res = requests.get(img_url, timeout=10)
                     if res.headers['Content-Type'][:5] == 'image':
                         b_io.write(res.content)
@@ -62,12 +62,12 @@ def deploy_imagenet(km_id: str, synset_id: str = None, num_images: int = 1000):
                                 pass
                         img_count = img_count + 1
                     else:
-                        stdout_print(f'not image\t{img_url}')
+                        stdout_print(f'not image\t{img_url[:50]}')
                 except Exception as e:
-                    stdout_print(f'error\t\t{img_url}')
+                    stdout_print(f'error\t\t{img_url[:50]}')
                     pass
         synset_id = None
-        print(f'{len(images_to_fetch)} images fetched.')
+    print(f'{num_images} images fetched.')
 
 
 dataset_commands = {

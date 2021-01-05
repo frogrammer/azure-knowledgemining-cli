@@ -207,7 +207,10 @@ def get_state(km_id: str):
     out_state = {}
     with open(os.path.join(out_dir,'terraform.tfstate'), 'r') as f:
         tfstate = json.loads(f.read())
-        return {r['type']: r['instances'][0]['attributes'] for r in tfstate['resources']}
+        for r in tfstate['resources']:
+            __ = out_state[r['type']] if r['type'] in out_state else []
+            out_state[r['type']] = __ + [i['attributes'] for i in r['instances']]
+        return out_state
 
 def get_envs():
     if os.path.isdir(AZKM_DIR):
