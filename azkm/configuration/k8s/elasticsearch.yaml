@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+        env:
+        - name: discovery.type
+          value: "single-node"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+spec:
+  type: ClusterIP
+  ports:
+  - name: api
+    port: 9200
+  - name: cluster
+    port: 9300
+  selector:
+    app: elasticsearch
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: elasticsearch
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: {{host}}
+    http:
+      paths:
+      - backend:
+          serviceName: elasticsearch
+          servicePort: 9200
+        path: /

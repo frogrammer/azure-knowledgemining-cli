@@ -1,0 +1,82 @@
+﻿{
+  "description": "Extract entities, detect language and extract key-phrases",
+  "cognitiveServices": {
+    "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+    "description": "mycogsvcs",
+    "key": "{{cog_services_key}}"
+  },
+  "skills": [
+    {
+      "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
+      "context": "/document/normalized_images/*",
+      "defaultLanguageCode": "en",
+      "detectOrientation": true,
+      "inputs": [
+        {
+          "name": "image",
+          "source": "/document/normalized_images/*"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "text"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.EntityRecognitionSkill",
+      "categories": [
+        "Location"
+      ],
+      "context": "/document/normalized_images/*",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/normalized_images/*/text"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "locations",
+          "targetName": "locations"
+        }
+      ]
+    },
+    {
+      "description": "Extract image analysis.",
+      "@odata.type": "#Microsoft.Skills.Vision.ImageAnalysisSkill",
+      "context": "/document/normalized_images/*",
+      "defaultLanguageCode": "en",
+      "visualFeatures": [
+        "tags",
+        "categories",
+        "description",
+        "faces",
+        "brands"
+      ],
+      "inputs": [
+        {
+          "name": "image",
+          "source": "/document/normalized_images/*"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "categories"
+        },
+        {
+          "name": "tags"
+        },
+        {
+          "name": "description"
+        },
+        {
+          "name": "faces"
+        },
+        {
+          "name": "brands"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+﻿{
+  "fields": [
+    {
+      "name": "content",
+      "type": "Edm.String",
+      "sortable": false,
+      "searchable": true,
+      "filterable": false,
+      "facetable": false
+    },
+    {
+      "name": "metadata_storage_path",
+      "type": "Edm.String",
+      "key": true,
+      "searchable": true,
+      "sortable": false,
+      "filterable": false,
+      "facetable": false
+    },
+    {
+      "name": "metadata_storage_name",
+      "type": "Edm.String",
+      "searchable": true,
+      "sortable": false,
+      "filterable": false,
+      "facetable": false
+    },
+    {
+      "name": "brand",
+      "type": "Collection(Edm.String)",
+      "searchable": true,
+      "sortable": false,
+      "filterable": true,
+      "facetable": true
+    },
+    {
+      "name": "tag",
+      "type": "Collection(Edm.String)",
+      "searchable": true,
+      "sortable": false,
+      "filterable": true,
+      "facetable": true
+    },
+    {
+      "name": "gender",
+      "type": "Collection(Edm.String)",
+      "searchable": true,
+      "sortable": false,
+      "filterable": true,
+      "facetable": true
+    },
+    {
+      "name": "caption",
+      "type": "Collection(Edm.String)",
+      "searchable": true,
+      "sortable": false,
+      "filterable": false,
+      "facetable": false
+    },
+    {
+      "name": "landmark",
+      "type": "Collection(Edm.String)",
+      "searchable": true,
+      "sortable": false,
+      "filterable": true,
+      "facetable": true
+    }
+  ]
+}

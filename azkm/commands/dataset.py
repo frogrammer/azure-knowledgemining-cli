@@ -72,9 +72,7 @@ def deploy_imagenet(km_id: str, synset_id: str = None, num_images: int = 1000):
 
 dataset_commands = {
     "dataset": {
-        "download": {
-            "imagenet": deploy_imagenet
-        }
+        "imagenet": deploy_imagenet
     }
 }
 

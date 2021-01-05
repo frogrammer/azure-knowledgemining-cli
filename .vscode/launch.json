@@ -44,7 +44,14 @@
             "type": "python",
             "request": "launch",
             "module": "azkm",
-            "args": ["dataset", "download", "imagenet", "test_km"]
+            "args": ["dataset", "imagenet", "test_km"]
+        },
+        {
+            "name": "Deploy imagenet recipe to test env",
+            "type": "python",
+            "request": "launch",
+            "module": "azkm",
+            "args": ["deploy", "imagenet", "test_km"]
         }
     ]
 }

@@ -38,3 +38,7 @@ def create_sp(name: str):
     full_sp = run_command('ad' , 'sp', 'list', '--show-mine', '--query', query)
     sp['objectId'] = full_sp['objectId']
     return sp
+
+def delete_sp(name: str):
+    return run_command('ad', 'sp', 'delete', name)
+    

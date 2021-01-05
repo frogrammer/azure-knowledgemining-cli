@@ -7,7 +7,7 @@ from azkm.utils import az
 import azkm.utils.osutil as osutil
 from azkm.providers.azurerm import (AzurermProvider, CognitiveAccount,
                                     KubernetesCluster, ResourceGroup,
-                                    SearchService, StorageAccount, StorageContainer)
+                                    SearchService, StorageAccount, StorageContainer, StorageShare)
 from cdktf import App, TerraformOutput, TerraformStack, TerraformVariable
 from constructs import Construct
 
@@ -57,94 +57,96 @@ def _get_envvars(km_id: str):
 
 def _create_sp(km_id: str, suffix: str):
     assert az.logged_in(), 'please log into az cli with desired tenant, subscription and identity.'
-    return az._create_sp('{0}{1}'.format(km_id, suffix))
+    return az.create_sp('{0}{1}'.format(km_id, suffix))
 
 class KmStack(TerraformStack):
+
+    vars: dict = {}
+    tfvars: dict = {}
+    resources: dict = {}
+
     def __init__(self, scope: Construct, ns: str):
         super().__init__(scope, ns)
 
-    def generate_baseline(self, km_id: str, region: str, tags: dict):
-        envvars = _get_envvars(km_id)
-        if 'sp_secret' not in envvars:
-            sp = _create_sp(envvars['env_id'], envvars['env_suffix'])
-            envvars['sp_app_id'] = sp['appId']
-            envvars['sp_obj_id'] = sp['objectId']
-            envvars['sp_secret'] = sp['password']
+    def generate_vars(self, km_id: str, region: str):
+        self.vars = _get_envvars(km_id)
+        self.vars['env_id'] = km_id
+        self.vars['env_region'] = region
 
-        env_id = TerraformVariable(self, 'env_id', type='string', default=_clean_name(envvars['env_id']))
-        res_suf = TerraformVariable(self, 'env_suffix', type='string', default=_clean_name(envvars['env_suffix']))
-        sp_app_id = TerraformVariable(self, 'sp_app_id', type='string', default=envvars['sp_app_id'])
-        sp_obj_id = TerraformVariable(self, 'sp_obj_id', type='string', default=envvars['sp_obj_id'])
-        sp_secret = TerraformVariable(self, 'sp_secret', type='string', default=envvars['sp_secret'])
+        if 'sp_secret' not in self.vars:
+            sp = _create_sp(self.vars['env_id'], self.vars['env_suffix'])
+            self.vars['sp_app_id'] = sp['appId']
+            self.vars['sp_obj_id'] = sp['objectId']
+            self.vars['sp_secret'] = sp['password']
 
-            
+        self.tfvars['env_id'] = TerraformVariable(self, 'env_id', type='string', default=_clean_name(self.vars['env_id']))
+        self.tfvars['env_region'] = TerraformVariable(self, 'env_region', type='string', default=self.vars['env_region'])
+        self.tfvars['env_suffix'] = TerraformVariable(self, 'env_suffix', type='string', default=_clean_name(self.vars['env_suffix']))
+        self.tfvars['sp_app_id'] = TerraformVariable(self, 'sp_app_id', type='string', default=self.vars['sp_app_id'])
+        self.tfvars['sp_obj_id'] = TerraformVariable(self, 'sp_obj_id', type='string', default=self.vars['sp_obj_id'])
+        self.tfvars['sp_secret'] = TerraformVariable(self, 'sp_secret', type='string', default=self.vars['sp_secret'])
+
+
+    def generate_baseline(self, tags: dict):
+    
         def _name_resource(res: str):
-            return '{0}{1}{2}'.format(env_id.string_value, _clean_name(res), res_suf.string_value)
+            return '{0}{1}{2}'.format(self.tfvars['env_id'].string_value, _clean_name(res), self.tfvars['env_suffix'].string_value)
 
 
         AzurermProvider(self, "Azurerm",
             features=[{}]
             )
 
-        km_rg = ResourceGroup(self, _name_resource('rg'),
+        self.resources['rg'] = ResourceGroup(self, _name_resource('rg'),
             name=_name_resource('rg'), 
-            location = region,
+            location = self.vars['env_region'],
             tags = tags
             )
 
-        km_storage = StorageAccount(self, _name_resource('storage'),
+        self.resources['storage'] = StorageAccount(self, _name_resource('storage'),
             name=_name_resource('storage'),
-            depends_on=[km_rg],
-            resource_group_name=km_rg.name,
-            location=km_rg.location, 
+            depends_on=[self.resources['rg']],
+            resource_group_name=self.resources['rg'].name,
+            location=self.resources['rg'].location, 
             account_tier='Standard',
             account_replication_type='GRS',
             tags=tags)
 
-        km_imagenet = StorageContainer(self, 'imagenet',
+        self.resources['container_imagenet'] = StorageContainer(self, 'imagenet',
             name='imagenet',
-            depends_on=[km_storage],
-            storage_account_name  = km_storage.name,
+            depends_on=[self.resources['storage']],
+            storage_account_name  = self.resources['storage'].name,
             container_access_type = "private")
 
-        km_text = CognitiveAccount(self, _name_resource('text'), 
-            name=_name_resource('text'),
-            depends_on=[km_rg],
-            resource_group_name=km_rg.name,
-            location=km_rg.location, 
+        self.resources['share_kmapp'] = StorageShare(self, 'kmapp',
+            name='kmapp',
+            depends_on=[self.resources['storage']],
+            storage_account_name  = self.resources['storage'].name,
+        )
+
+        self.resources['cogsvcs'] = CognitiveAccount(self, _name_resource('cogsvcs'), 
+            name=_name_resource('cogsvcs'),
+            depends_on=[self.resources['rg']],
+            resource_group_name=self.resources['rg'].name,
+            location=self.resources['rg'].location, 
             sku_name='S0',
-            kind = 'TextAnalytics'
+            kind = 'CognitiveServices'
             )
 
-        km_img = CognitiveAccount(self, _name_resource('img'), 
-            name=_name_resource('img'),
-            depends_on=[km_rg],
-            resource_group_name=km_rg.name,
-            location=km_rg.location, 
-            sku_name='S1',
-            kind = 'ComputerVision'
-            )
-
-        km_search = SearchService(self, _name_resource('search'), 
+        self.resources['search'] = SearchService(self, _name_resource('search'), 
             name=_name_resource('search'),
-            depends_on=[km_rg],
-            resource_group_name=km_rg.name,
-            location=km_rg.location, 
+            depends_on=[self.resources['rg']],
+            resource_group_name=self.resources['rg'].name,
+            location=self.resources['rg'].location, 
             sku='standard'
             )
 
-        TerraformOutput(self, 'rg_id', value=km_rg.id)
-        TerraformOutput(self, 'storage_id', value=km_storage.id)
-        TerraformOutput(self, 'text_endpoint', value=km_text.endpoint)
-        TerraformOutput(self, 'img_endpoint', value=km_img.endpoint)
-        TerraformOutput(self, 'search_name', value=km_search.name)
-
         if DEPLOY_AKS:
-            km_aks = KubernetesCluster(self, _name_resource('aks'), 
+            self.resources['aks'] = KubernetesCluster(self, _name_resource('aks'), 
                 name=_name_resource('aks'),
-                depends_on=[km_rg],
-                resource_group_name=km_rg.name,
-                location=km_rg.location, 
+                depends_on=[self.resources['rg']],
+                resource_group_name=self.resources['rg'].name,
+                location=self.resources['rg'].location, 
                 default_node_pool=[{
                     'name': 'default',
                     'nodeCount': 1,
@@ -152,8 +154,8 @@ class KmStack(TerraformStack):
                 }],
                 dns_prefix='azkm',
                 service_principal=[{
-                    'clientId': envvars['sp_app_id'],
-                    'clientSecret': envvars['sp_secret']
+                    'clientId': self.vars['sp_app_id'],
+                    'clientSecret': self.vars['sp_secret']
                 }],
                 addon_profile=[{
                     'httpApplicationRouting': [{
@@ -161,13 +163,18 @@ class KmStack(TerraformStack):
                     }]
                 }]
             )
-            TerraformOutput(self, 'aks_name', value=km_aks.name)
 
+        return self.resources
+
+    def generate_outputs(self):
+        return [TerraformOutput(self, r, value=self.resources[r].id) for r in self.resources]
 
 def synth_km(km_id: str, region: str):
     app = App(outdir=__get_out_dir(km_id))
     km_stack = KmStack(app, km_id)
-    km_stack.generate_baseline(km_id, region, {'km_id': km_id})
+    km_stack.generate_vars(km_id, region)
+    km_stack.generate_baseline({'azkmid': km_id})
+    km_stack.generate_outputs()
     app.synth()
     return app.outdir
 
@@ -188,8 +195,11 @@ def apply(km_id: str):
 
 def destroy(km_id: str):
     out_dir = __get_out_dir(km_id)
+    vars = _get_envvars(km_id)
     osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'destroy'])
+    if vars['sp_object_id']:
+        az.delete_sp(vars['sp_object_id'])
     shutil.rmtree(out_dir)
 
 def get_state(km_id: str):
