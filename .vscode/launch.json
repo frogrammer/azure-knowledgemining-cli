@@ -38,6 +38,13 @@
             "request": "launch",
             "module": "azkm",
             "args": ["state", "list"]
+        },
+        {
+            "name": "DL Imagenet to test env",
+            "type": "python",
+            "request": "launch",
+            "module": "azkm",
+            "args": ["dataset", "download", "imagenet", "test_km"]
         }
     ]
 }

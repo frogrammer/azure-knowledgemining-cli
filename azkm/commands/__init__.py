@@ -1,1 +1,1 @@
-__all__ = ['destroy', 'init', 'state']
+__all__ = ['dataset', 'destroy', 'init', 'state']

@@ -7,7 +7,7 @@ from azkm.utils import az
 import azkm.utils.osutil as osutil
 from azkm.providers.azurerm import (AzurermProvider, CognitiveAccount,
                                     KubernetesCluster, ResourceGroup,
-                                    SearchService, StorageAccount, DataAzurermKubernetesClusterAddonProfile)
+                                    SearchService, StorageAccount, StorageContainer)
 from cdktf import App, TerraformOutput, TerraformStack, TerraformVariable
 from constructs import Construct
 
@@ -55,9 +55,9 @@ def _get_envvars(km_id: str):
                 'sp_secret': __get_var('spsecret')
             }
 
-def create_sp(km_id: str, suffix: str):
+def _create_sp(km_id: str, suffix: str):
     assert az.logged_in(), 'please log into az cli with desired tenant, subscription and identity.'
-    return az.create_sp('{0}{1}'.format(km_id, suffix))
+    return az._create_sp('{0}{1}'.format(km_id, suffix))
 
 class KmStack(TerraformStack):
     def __init__(self, scope: Construct, ns: str):
@@ -66,7 +66,7 @@ class KmStack(TerraformStack):
     def generate_baseline(self, km_id: str, region: str, tags: dict):
         envvars = _get_envvars(km_id)
         if 'sp_secret' not in envvars:
-            sp = create_sp(envvars['env_id'], envvars['env_suffix'])
+            sp = _create_sp(envvars['env_id'], envvars['env_suffix'])
             envvars['sp_app_id'] = sp['appId']
             envvars['sp_obj_id'] = sp['objectId']
             envvars['sp_secret'] = sp['password']
@@ -100,6 +100,12 @@ class KmStack(TerraformStack):
             account_tier='Standard',
             account_replication_type='GRS',
             tags=tags)
+
+        km_imagenet = StorageContainer(self, 'imagenet',
+            name='imagenet',
+            depends_on=[km_storage],
+            storage_account_name  = km_storage.name,
+            container_access_type = "private")
 
         km_text = CognitiveAccount(self, _name_resource('text'), 
             name=_name_resource('text'),
