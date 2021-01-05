@@ -2,3 +2,6 @@ fire
 fire-cli-helper
 cdktf
 tabulate
+azure-cli==2.14.0
+azure-mgmt-core==1.2.0
+azure-storage-blob

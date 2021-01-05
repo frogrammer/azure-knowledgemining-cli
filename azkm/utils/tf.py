@@ -3,6 +3,7 @@ import os
 import random
 import shutil
 
+from azkm.utils import az
 import azkm.utils.osutil as osutil
 from azkm.providers.azurerm import (AzurermProvider, CognitiveAccount,
                                     KubernetesCluster, ResourceGroup,
@@ -11,7 +12,7 @@ from cdktf import App, TerraformOutput, TerraformStack, TerraformVariable
 from constructs import Construct
 
 AZKM_DIR = os.path.join(os.path.expanduser ('~'), '.azkm')
-DEPLOY_AKS = False
+DEPLOY_AKS = True
 
 def __get_out_dir(km_id: str):
     out_dir = os.path.join(AZKM_DIR, '{0}.out'.format(km_id))
@@ -27,7 +28,7 @@ def _clean_name(name: str):
         name = name.replace(c, '')
     return name
 
-def _get_vars(km_id: str):
+def _get_envvars(km_id: str):
     out_dir = __get_out_dir(km_id)
     vars_file = os.path.join(out_dir, 'cdk.tf.json')
     if not os.path.isfile(vars_file):
@@ -38,23 +39,45 @@ def _get_vars(km_id: str):
     else:
         with open(vars_file, 'r') as f:
             vars = json.loads(f.read())['variable']
-            env_id = [vars[k] for k in vars.keys() if 'envid' in k][0]
-            env_id = [vars[k] for k in vars.keys() if 'envid' in k][0]
+            
+            def __get_var(var: str):
+                candidates = [vars[k]['default'] for k in vars.keys() if var in k]
+                if len(candidates):
+                    return candidate[0]
+                else:
+                    return ''
+
             return {
-                'env_id': [vars[k]['default'] for k in vars.keys() if 'envid' in k][0],
-                'env_suffix': [vars[k]['default'] for k in vars.keys() if 'suffix' in k][0]
+                'env_id': __get_var('envid'),
+                'env_suffix': __get_var('suffix'),
+                'sp_app_id': __get_var('spappid'),
+                'sp_obj_id': __get_var('spobjid'),
+                'sp_secret': __get_var('spsecret')
             }
 
+def create_sp(km_id: str, suffix: str):
+    assert az.logged_in(), 'please log into az cli with desired tenant, subscription and identity.'
+    return az.create_sp('{0}{1}'.format(km_id, suffix))
 
 class KmStack(TerraformStack):
     def __init__(self, scope: Construct, ns: str):
         super().__init__(scope, ns)
 
     def generate_baseline(self, km_id: str, region: str, tags: dict):
-        vars = _get_vars(km_id)
-        env_id = TerraformVariable(self, 'env_id', type='string', default=_clean_name(vars['env_id']))
-        res_suf = TerraformVariable(self, 'env_suffix', type='string', default=_clean_name(vars['env_suffix']))
+        envvars = _get_envvars(km_id)
+        if 'sp_secret' not in envvars:
+            sp = create_sp(envvars['env_id'], envvars['env_suffix'])
+            envvars['sp_app_id'] = sp['appId']
+            envvars['sp_obj_id'] = sp['objectId']
+            envvars['sp_secret'] = sp['password']
 
+        env_id = TerraformVariable(self, 'env_id', type='string', default=_clean_name(envvars['env_id']))
+        res_suf = TerraformVariable(self, 'env_suffix', type='string', default=_clean_name(envvars['env_suffix']))
+        sp_app_id = TerraformVariable(self, 'sp_app_id', type='string', default=envvars['sp_app_id'])
+        sp_obj_id = TerraformVariable(self, 'sp_obj_id', type='string', default=envvars['sp_obj_id'])
+        sp_secret = TerraformVariable(self, 'sp_secret', type='string', default=envvars['sp_secret'])
+
+            
         def _name_resource(res: str):
             return '{0}{1}{2}'.format(env_id.string_value, _clean_name(res), res_suf.string_value)
 
@@ -122,8 +145,9 @@ class KmStack(TerraformStack):
                     'vmSize': 'Standard_D4s_v3',
                 }],
                 dns_prefix='azkm',
-                identity=[{
-                    'type': 'SystemAssigned'
+                service_principal=[{
+                    'clientId': envvars['sp_app_id'],
+                    'clientSecret': envvars['sp_secret']
                 }]
             )
             TerraformOutput(self, 'aks_name', value=km_aks.name)

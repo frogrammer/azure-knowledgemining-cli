@@ -16,7 +16,7 @@ setup(
     author_email='luke0vinton@gmail.com',
     license='Apache 2.0',
     packages=find_packages(),
-    install_requires=['fire', 'fire-cli-helper', 'cdktf', 'tabulate'],
+    install_requires=['fire', 'fire-cli-helper', 'cdktf', 'tabulate', 'azure-cli==2.14.0', 'azure-mgmt-core==1.2.0', 'azure-storage-blob'],
     tests_require=[],
     classifiers=[],
     test_suite='',
