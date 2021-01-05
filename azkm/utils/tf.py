@@ -7,7 +7,7 @@ from azkm.utils import az
 import azkm.utils.osutil as osutil
 from azkm.providers.azurerm import (AzurermProvider, CognitiveAccount,
                                     KubernetesCluster, ResourceGroup,
-                                    SearchService, StorageAccount)
+                                    SearchService, StorageAccount, DataAzurermKubernetesClusterAddonProfile)
 from cdktf import App, TerraformOutput, TerraformStack, TerraformVariable
 from constructs import Construct
 
@@ -43,7 +43,7 @@ def _get_envvars(km_id: str):
             def __get_var(var: str):
                 candidates = [vars[k]['default'] for k in vars.keys() if var in k]
                 if len(candidates):
-                    return candidate[0]
+                    return candidates[0]
                 else:
                     return ''
 
@@ -148,6 +148,11 @@ class KmStack(TerraformStack):
                 service_principal=[{
                     'clientId': envvars['sp_app_id'],
                     'clientSecret': envvars['sp_secret']
+                }],
+                addon_profile=[{
+                    'httpApplicationRouting': [{
+                        'enabled': True
+                    }]
                 }]
             )
             TerraformOutput(self, 'aks_name', value=km_aks.name)
