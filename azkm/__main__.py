@@ -1,9 +1,9 @@
 """azkm CLI entry point."""
 
-from .flight_checks import prereqs
+from azkm.flight_checks import prereqs
 import firehelper
 import sys
-from .commands import *  # noqa
+from azkm.commands import *  # noqa
 
 def main():
     """azkm CLI.

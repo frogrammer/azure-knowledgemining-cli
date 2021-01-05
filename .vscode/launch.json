@@ -26,18 +26,18 @@
            "args": ["destroy", "test_km"]
        },
         {
-            "name": "Read State Test KM",
+            "name": "Read Env Test KM",
             "type": "python",
             "request": "launch",
             "module": "azkm",
-            "args": ["state", "read", "test_km"]
+            "args": ["environments", "read", "test_km"]
         },
         {
             "name": "List Envs",
             "type": "python",
             "request": "launch",
             "module": "azkm",
-            "args": ["state", "list"]
+            "args": ["environments", "list"]
         },
         {
             "name": "DL Imagenet to test env",
@@ -59,7 +59,7 @@
             "type": "python",
             "request": "launch",
             "module": "azkm",
-            "args": ["deploy", "imagenet", "test_km"]
+            "args": ["recipe", "imagenet", "test_km", "UK South"]
         }
     ]
 }

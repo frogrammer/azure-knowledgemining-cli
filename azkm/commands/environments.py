@@ -8,11 +8,11 @@ def read(km_id: str):
 def list_env():
     print(tabulate([[env] for env in tf.get_envs()]))
 
-state_cmd = {
-    'state': {
-        'read': read,
+env_cmd = {
+    'environments': {
+        'show': read,
         'list': list_env
     }
 }
 
-firehelper.CommandRegistry.register(state_cmd)
+firehelper.CommandRegistry.register(env_cmd)
