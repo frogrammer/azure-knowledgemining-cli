@@ -44,7 +44,7 @@ def deploy_imagenet(km_id: str, synset_id: str = None, num_images: int = 1000):
         image_urls_res = requests.get(f'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid={synset_id}')
         image_urls_res.raise_for_status
         images_to_fetch = image_urls_res.text.split('\r\n')[:-1][:num_images - img_count]
-        stdout_print(f'fetching {len(images_to_fetch)} images from synset {synset_id}')
+        print(f'fetching {len(images_to_fetch)} images from synset {synset_id}')
         for img_url in images_to_fetch:
             with io.BytesIO() as b_io:
                 try:
@@ -68,6 +68,7 @@ def deploy_imagenet(km_id: str, synset_id: str = None, num_images: int = 1000):
                     stdout_print(f'error\t\t{img_url}')
                     pass
         synset_id = None
+        print(f'{len(images_to_fetch)} images fetched.')
 
 
 dataset_commands = {

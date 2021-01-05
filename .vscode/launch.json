@@ -44,7 +44,7 @@
             "type": "python",
             "request": "launch",
             "module": "azkm",
-            "args": ["dataset", "imagenet", "test_km"]
+            "args": ["dataset", "imagenet", "test_km", "num_images", "100"]
         },
         {
             "name": "Deploy imagenet pipeline to test env",
