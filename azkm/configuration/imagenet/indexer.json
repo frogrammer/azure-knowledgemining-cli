@@ -45,5 +45,9 @@
       "dataToExtract": "contentAndMetadata",
       "imageAction": "generateNormalizedImages"
     }
+  },
+  "schedule": { 
+    "interval" : "PT10M", 
+    "startTime" : "2015-01-01T00:00:00Z" 
   }
 }

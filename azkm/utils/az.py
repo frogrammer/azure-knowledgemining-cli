@@ -39,6 +39,6 @@ def create_sp(name: str):
     sp['objectId'] = full_sp['objectId']
     return sp
 
-def delete_sp(name: str):
-    return run_command('ad', 'sp', 'delete', name)
+def delete_sp(id: str):
+    return run_command('ad', 'sp', 'delete', '--id', id)
     

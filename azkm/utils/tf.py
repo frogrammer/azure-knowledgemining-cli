@@ -198,8 +198,8 @@ def destroy(km_id: str):
     vars = _get_envvars(km_id)
     osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'destroy'])
-    if vars['sp_object_id']:
-        az.delete_sp(vars['sp_object_id'])
+    if vars['sp_obj_id']:
+        az.delete_sp(vars['sp_obj_id'])
     shutil.rmtree(out_dir)
 
 def get_state(km_id: str):
