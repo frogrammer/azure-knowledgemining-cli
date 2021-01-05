@@ -209,4 +209,7 @@ def get_state(km_id: str):
         return tfstate
 
 def get_envs():
-    return [d.replace('.out', '') for d in os.listdir(AZKM_DIR)]
+    if os.path.isdir(AZKM_DIR):
+        return [d.replace('.out', '') for d in os.listdir(AZKM_DIR)]
+    else:
+        return None
