@@ -198,15 +198,16 @@ def destroy(km_id: str):
     vars = _get_envvars(km_id)
     osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'destroy'])
-    if vars['sp_obj_id']:
+    if 'sp_obj_id' in vars and vars['sp_obj_id']:
         az.delete_sp(vars['sp_obj_id'])
     shutil.rmtree(out_dir)
 
 def get_state(km_id: str):
     out_dir = __get_out_dir(km_id)
+    out_state = {}
     with open(os.path.join(out_dir,'terraform.tfstate'), 'r') as f:
         tfstate = json.loads(f.read())
-        return tfstate
+        return {r['type']: r['instances'][0]['attributes'] for r in tfstate['resources']}
 
 def get_envs():
     if os.path.isdir(AZKM_DIR):

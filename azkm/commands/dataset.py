@@ -28,8 +28,7 @@ def deploy_imagenet(km_id: str, synset_id: str = None, num_images: int = 1000):
     """
     try:
         env_state = tf.get_state(km_id)
-        env_storage = [r for r in env_state['resources'] if r['type'] == 'azurerm_storage_account'][0]
-        storage_conn = env_storage['instances'][0]['attributes']['primary_blob_connection_string']
+        storage_conn = env_state['azurerm_storage_account']['primary_blob_connection_string']
     except Exception as e:
         raise Exception('Error finding storage for environment {0}.'.format(km_id))
     img_count = 0

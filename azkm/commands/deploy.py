@@ -2,60 +2,64 @@
 import json
 import os
 import requests
+from urllib.parse import urljoin
+
 from azkm.utils import tf
 from azkm.utils import cogsearch
+from azkm.utils import text
 from firehelper import CommandRegistry
 
-ROOT_PATH = '/'.join(os.path.dirname(os.path.realpath(__file__)).split('/')[:-1])
-CFG_PATH = os.path.join(ROOT_PATH,'configuration')
-IMAGENET_PATH = os.path.join(CFG_PATH, 'imagenet')
+PIPELINE_URL = 'https://raw.githubusercontent.com/frogrammer/azkm-pipelines/master/pipelines.json'
 
-def deploy_imagenet(km_id: str,):
-    """Deploy imagenet pipeline.
+PIPELINE_COMPONENTS = ['datasource', 'skillset', 'index', 'indexer']  # installation order
+
+def _load_pipeline(url: str, pipeline_name: str, resource_attr: dict):
+    p_res = requests.get(url)
+    p_res.raise_for_status()
+    p_components = p_res.json()
+    if not pipeline_name in p_components or not all([p in p_components[pipeline_name] for p in PIPELINE_COMPONENTS]):
+        raise Exception('Invalid pipeline json.')
+    
+    pipeline = {}
+    for p in PIPELINE_COMPONENTS:
+        comp_url = p_components[pipeline_name][p]
+        if comp_url.startswith('.'):  # relative url
+            comp_url = urljoin(url, comp_url)
+        comp_res = requests.get(comp_url)
+        comp_res.raise_for_status()
+        res_txt = text.replace_tokens(comp_res.text, resource_attr)
+        pipeline[p] = {}
+        try:
+            pipeline[p] = json.loads(res_txt)
+        except:
+            pipeline[p] = json.loads(res_txt[1:])
+
+    return pipeline
+
+
+
+def deploy_pipeline(pipeline: str, km_id: str, pipeline_url = PIPELINE_URL):
+    """Deploy pipeline.
 
     Args:
         km_id (str): azkm instance name
     """
     try:
         env_state = tf.get_state(km_id)
-        search_attr = [r for r in env_state['resources'] if r['type'] == 'azurerm_search_service'][0]['instances'][0]['attributes']
-        cogsvcs_attr = [r for r in env_state['resources'] if r['type'] == 'azurerm_cognitive_account'][0]['instances'][0]['attributes']
-        storage_attr = [r for r in env_state['resources'] if r['type'] == 'azurerm_storage_account'][0]['instances'][0]['attributes']
-        storage_conn = storage_attr['primary_blob_connection_string']
     except:
-        raise Exception('Error finding search appliance or cognitive services for environment {0}'.format(km_id))
+        raise Exception('Error finding search appliance or cognitive services for environment {0}'.format(km_id))    
 
-    # datasource
-    with open('{0}/datasource.json'.format(IMAGENET_PATH), 'r') as f:
-        ds_txt = f.read()  # invalid first char
-        ds_txt = ds_txt.replace('{{env_storage_connection_string}}', storage_conn).replace('{{env_storage_container}}', 'imagenet')
-        datasource = json.loads(ds_txt)
-        cogsearch.create_datasource('imagenet', search_attr, datasource)
-
-    # skillset
-    with open('{0}/skills.json'.format(IMAGENET_PATH), 'r') as f:
-        sk_txt = f.read()[1:]  # invalid first char
-        sk_txt = sk_txt.replace('{{cog_services_key}}', cogsvcs_attr['primary_access_key'])
-        skillset = json.loads(sk_txt)
-        cogsearch.create_skillset('imagenet', search_attr, skillset)
-        
-    # index
-    with open('{0}/index.json'.format(IMAGENET_PATH), 'r') as f:
-        idx_txt = f.read()[1:]  # invalid first char
-        index = json.loads(idx_txt)
-        cogsearch.create_index('imagenet', search_attr, index)
-
-    # indexer
-    with open('{0}/indexer.json'.format(IMAGENET_PATH), 'r') as f:
-        idxr_txt = f.read()[1:].replace('{{datasource_name}}', 'imagenet').replace('{{index_name}}', 'imagenet').replace('{{skillset_name}}', 'imagenet')  # invalid first char
-        indexer = json.loads(idxr_txt)
-        cogsearch.create_indexer('imagenet', search_attr, indexer)
+    pipeline_resources = _load_pipeline(pipeline_url, pipeline, env_state)
     
+    for p in PIPELINE_COMPONENTS:
+        cogsearch.create_resource(p, pipeline, env_state['azurerm_search_service'], pipeline_resources[p])
+        
     print('\r\nDeployed imagenet pipeline to environment {0}.'.format(km_id))
+
 
 pipeline_commands = {
     "deploy": {
-        "imagenet": deploy_imagenet
+        "pipeline": deploy_pipeline
     }
 }
 

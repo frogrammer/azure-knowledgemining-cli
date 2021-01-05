@@ -9,6 +9,13 @@ def create_resource(component_name: str, resource_name: str, search_attr: dict, 
         'Content-Type': 'application/json',
         'api-key': search_attr['primary_key']
     }
+    # pluralise
+    last_char = component_name[-1]
+    if last_char is not 's':
+        if last_char is 'x':
+            component_name = component_name + 'e'
+        component_name = component_name + 's'
+
     resource_attr['name'] = resource_name
     res_endpoint = 'https://{0}.search.windows.net/{1}?api-version={2}'.format(search_attr['name'], component_name, API_VERSION)
     check_res = requests.get('{0}&$select=name'.format(res_endpoint), headers=headers)

@@ -30,7 +30,7 @@
             "type": "python",
             "request": "launch",
             "module": "azkm",
-            "args": ["environments", "read", "test_km"]
+            "args": ["environment", "show", "test_km"]
         },
         {
             "name": "List Envs",
@@ -51,7 +51,7 @@
             "type": "python",
             "request": "launch",
             "module": "azkm",
-            "args": ["deploy", "imagenet", "test_km"]
+            "args": ["deploy", "pipeline", "imagenet", "test_km"]
         }
         ,
         {
