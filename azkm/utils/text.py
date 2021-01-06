@@ -8,7 +8,7 @@ def flatten_dict(d: dict):
                 elif not isinstance(d[k], str) and isinstance(d[k], list):
                     for idx, val in enumerate(d[k]):
                         suffix = '/' + str(idx) + '/'
-                        if len(d[k]) == 0:
+                        if len(d[k]) == 1:
                             suffix = '/'
                         __(val, key_prefix + k + suffix)
                 else:
