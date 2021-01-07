@@ -161,6 +161,9 @@ class KmStack(TerraformStack):
             addon_profile=[{
                 'httpApplicationRouting': [{
                     'enabled': True
+                }],
+                'kubeDashboard': [{
+                    'enabled': True
                 }]
             }]
         )
