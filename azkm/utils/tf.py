@@ -12,7 +12,6 @@ from cdktf import App, TerraformOutput, TerraformStack, TerraformVariable
 from constructs import Construct
 
 AZKM_DIR = os.path.join(os.path.expanduser ('~'), '.azkm')
-DEPLOY_AKS = True
 
 def get_out_dir(km_id: str):
     out_dir = os.path.join(AZKM_DIR, '{0}.out'.format(km_id))
@@ -138,31 +137,33 @@ class KmStack(TerraformStack):
             depends_on=[self.resources['rg']],
             resource_group_name=self.resources['rg'].name,
             location=self.resources['rg'].location, 
-            sku='standard'
+            sku='standard',
+            timeouts=[{
+                'create': '5m'
+            }]
             )
 
-        if DEPLOY_AKS:
-            self.resources['aks'] = KubernetesCluster(self, _name_resource('aks'), 
-                name=_name_resource('aks'),
-                depends_on=[self.resources['rg']],
-                resource_group_name=self.resources['rg'].name,
-                location=self.resources['rg'].location, 
-                default_node_pool=[{
-                    'name': 'default',
-                    'nodeCount': 1,
-                    'vmSize': 'Standard_D4s_v3',
-                }],
-                dns_prefix='azkm',
-                service_principal=[{
-                    'clientId': self.vars['sp_app_id'],
-                    'clientSecret': self.vars['sp_secret']
-                }],
-                addon_profile=[{
-                    'httpApplicationRouting': [{
-                        'enabled': True
-                    }]
+        self.resources['aks'] = KubernetesCluster(self, _name_resource('aks'), 
+            name=_name_resource('aks'),
+            depends_on=[self.resources['rg']],
+            resource_group_name=self.resources['rg'].name,
+            location=self.resources['rg'].location, 
+            default_node_pool=[{
+                'name': 'default',
+                'nodeCount': 1,
+                'vmSize': 'Standard_D4s_v3',
+            }],
+            dns_prefix='azkm',
+            service_principal=[{
+                'clientId': self.vars['sp_app_id'],
+                'clientSecret': self.vars['sp_secret']
+            }],
+            addon_profile=[{
+                'httpApplicationRouting': [{
+                    'enabled': True
                 }]
-            )
+            }]
+        )
 
         return self.resources
 

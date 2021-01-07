@@ -138,6 +138,8 @@ def deploy_application(pipeline: str, km_id: str, pipeline_url = PIPELINE_URL):
 
 
     print('\r\nDeployed imagenet app to environment {0}.'.format(km_id))
+    #addon_profile/http_application_routing/http_application_routing_zone_name
+    print('http://{0}.{1}'.format(pipeline, env_state['azurerm_kubernetes_cluster'][0]['http_application_routing'][0]['http_application_routing_zone_name']))
 
 pipeline_commands = {
     "deploy": {
