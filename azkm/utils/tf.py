@@ -137,7 +137,7 @@ class KmStack(TerraformStack):
             depends_on=[self.resources['rg']],
             resource_group_name=self.resources['rg'].name,
             location=self.resources['rg'].location, 
-            sku='standard'
+            sku='basic'
             )
 
         self.resources['aks'] = KubernetesCluster(self, _name_resource('aks'), 
