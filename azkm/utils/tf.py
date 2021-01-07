@@ -202,7 +202,13 @@ def destroy(km_id: str):
         az.delete_sp(vars['sp_obj_id'])
     shutil.rmtree(out_dir)
 
+def refresh(km_id: str):
+    out_dir = get_out_dir(km_id)
+    osutil.chdir(out_dir)
+    osutil.run_subprocess(['terraform', 'refresh'])
+
 def get_state(km_id: str):
+    refresh(km_id)
     out_dir = get_out_dir(km_id)
     out_state = {}
     with open(os.path.join(out_dir,'terraform.tfstate'), 'r') as f:
