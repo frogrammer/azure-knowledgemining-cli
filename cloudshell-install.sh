@@ -1,5 +1,5 @@
 pip install nodeenv
 nodeenv azkm
-. azkm/bin/activate
+source azkm/bin/activate
 pip install azkm
 azkm
