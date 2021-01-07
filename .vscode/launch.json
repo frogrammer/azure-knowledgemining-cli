@@ -52,8 +52,14 @@
             "request": "launch",
             "module": "azkm",
             "args": ["deploy", "pipeline", "imagenet", "test_km"]
-        }
-        ,
+        },
+        {
+            "name": "Deploy imagenet app to test env",
+            "type": "python",
+            "request": "launch",
+            "module": "azkm",
+            "args": ["deploy", "app", "imagenet", "test_km"]
+        },
         {
             "name": "Deploy imagenet recipe",
             "type": "python",

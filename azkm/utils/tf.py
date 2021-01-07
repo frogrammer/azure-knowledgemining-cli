@@ -14,7 +14,7 @@ from constructs import Construct
 AZKM_DIR = os.path.join(os.path.expanduser ('~'), '.azkm')
 DEPLOY_AKS = True
 
-def __get_out_dir(km_id: str):
+def get_out_dir(km_id: str):
     out_dir = os.path.join(AZKM_DIR, '{0}.out'.format(km_id))
     if not os.path.isdir(AZKM_DIR):
         os.mkdir(AZKM_DIR)
@@ -29,7 +29,7 @@ def _clean_name(name: str):
     return name
 
 def _get_envvars(km_id: str):
-    out_dir = __get_out_dir(km_id)
+    out_dir = get_out_dir(km_id)
     vars_file = os.path.join(out_dir, 'cdk.tf.json')
     if not os.path.isfile(vars_file):
         return {
@@ -170,7 +170,7 @@ class KmStack(TerraformStack):
         return [TerraformOutput(self, r, value=self.resources[r].id) for r in self.resources]
 
 def synth_km(km_id: str, region: str):
-    app = App(outdir=__get_out_dir(km_id))
+    app = App(outdir=get_out_dir(km_id))
     km_stack = KmStack(app, km_id)
     km_stack.generate_vars(km_id, region)
     km_stack.generate_baseline({'azkmid': km_id})
@@ -179,22 +179,22 @@ def synth_km(km_id: str, region: str):
     return app.outdir
 
 def init(km_id: str):
-    out_dir = __get_out_dir(km_id)
+    out_dir = get_out_dir(km_id)
     osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'init', '--upgrade'])
 
 def plan(km_id: str):
-    out_dir = __get_out_dir(km_id)
+    out_dir = get_out_dir(km_id)
     osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'plan'])
 
 def apply(km_id: str):
-    out_dir = __get_out_dir(km_id)
+    out_dir = get_out_dir(km_id)
     osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'apply'])
 
 def destroy(km_id: str):
-    out_dir = __get_out_dir(km_id)
+    out_dir = get_out_dir(km_id)
     vars = _get_envvars(km_id)
     osutil.chdir(out_dir)
     osutil.run_subprocess(['terraform', 'destroy'])
@@ -203,7 +203,7 @@ def destroy(km_id: str):
     shutil.rmtree(out_dir)
 
 def get_state(km_id: str):
-    out_dir = __get_out_dir(km_id)
+    out_dir = get_out_dir(km_id)
     out_state = {}
     with open(os.path.join(out_dir,'terraform.tfstate'), 'r') as f:
         tfstate = json.loads(f.read())
