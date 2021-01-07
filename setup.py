@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 from os import path
+from azkm import __VERSION__
 
 # https://packaging.python.org/guides/making-a-pypi-friendly-readme/
 this_directory = path.abspath(path.dirname(__file__))
@@ -9,7 +10,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 setup(
     name='azkm',
     description='azure knowledge mining cli',
-    version="0.2.2",
+    version=__VERSION__,
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/frogrammer/azure-knowledgemining-cli',
