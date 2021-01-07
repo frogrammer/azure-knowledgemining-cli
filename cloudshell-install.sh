@@ -1,5 +1,5 @@
 pip install nodeenv
 nodeenv azkm
 . azkm/bin/activate
-pip install azure-knowledgemining-cli
+pip install azkm
 azkm
