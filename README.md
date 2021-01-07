@@ -16,7 +16,7 @@ azkm [cmd] [sub-cmd] [parameters]
 # installation
 To use on azure cloud shell:
 ```bash
-curl https://raw.githubusercontent.com/frogrammer/azure-knowledgemining-cli/main/cloudshell-install.sh | bash --
+curl https://raw.githubusercontent.com/frogrammer/azure-knowledgemining-cli/main/cloudshell-install.sh | source
 ```
 ## pre-requisites
  - kubectl 
