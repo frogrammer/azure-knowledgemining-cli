@@ -138,9 +138,9 @@ class KmStack(TerraformStack):
             resource_group_name=self.resources['rg'].name,
             location=self.resources['rg'].location, 
             sku='standard',
-            timeouts=[{
+            timeouts={
                 'create': '5m'
-            }]
+            }
             )
 
         self.resources['aks'] = KubernetesCluster(self, _name_resource('aks'), 
