@@ -1,15 +1,10 @@
 """CLI commands: fulmar deploy pipeline [ida]."""
 import json
 import os
-import requests
 from urllib.parse import urljoin
 
-from azkm.utils import az
-from azkm.utils import tf
-from azkm.utils import cogsearch
-from azkm.utils import text
-from azkm.utils import osutil
-from azkm.utils import zip
+import requests
+from azkm.utils import az, cogsearch, osutil, text, tf, zip
 from firehelper import CommandRegistry
 
 # TODO: rethink pipeline/application deployment config + pattern
@@ -140,6 +135,7 @@ def deploy_application(pipeline: str, km_id: str, pipeline_url = PIPELINE_URL):
     print('\r\nDeployed imagenet app to environment {0}.'.format(km_id))
     #addon_profile/http_application_routing/http_application_routing_zone_name
     print('http://{0}.{1}'.format(pipeline, env_state['azurerm_kubernetes_cluster'][0]['addon_profile'][0]['http_application_routing'][0]['http_application_routing_zone_name']))
+    print('\r\nYou may need to wait up to 1h for DNS to propagate.')
 
 pipeline_commands = {
     "deploy": {
