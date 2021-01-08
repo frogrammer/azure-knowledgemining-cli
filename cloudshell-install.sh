@@ -5,5 +5,4 @@ pip install azkm
 echo '' > ~/start_azkm.sh
 echo 'source ~/azkm/bin/activate' >>  ~/start_azkm.sh
 echo 'azkm' >>  ~/start_azkm.sh
-alias start_azkm='source ~/start_azkm.sh'
-echo 'run start_azkm to run azkm in nodejs virtualenv.'
+echo 'run ~/start_azkm.sh to run azkm in nodejs virtualenv.'
