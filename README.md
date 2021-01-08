@@ -1,6 +1,9 @@
 # azure-knowledgemining-cli
 azkm is a cli tool to deploy azure knowledge mining solutions with cognitive skills and applicable datasets.
 
+# detailed guide
+https://github.com/frogrammer/azure-knowledgemining-cli/blob/main/azkm_sales_pamphlet.pdf
+
  # commands
 ```bash
 azkm [cmd] [sub-cmd] [parameters]
