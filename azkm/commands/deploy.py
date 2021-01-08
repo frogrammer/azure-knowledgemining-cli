@@ -10,7 +10,7 @@ from firehelper import CommandRegistry
 # TODO: rethink pipeline/application deployment config + pattern
 
 
-CATALOG_URL = 'https://raw.githubusercontent.com/frogrammer/azkm-catalog/master/catalg.json'
+CATALOG_URL = 'https://raw.githubusercontent.com/frogrammer/azkm-catalog/master/catalog.json'
 PIPELINE_COMPONENTS = ['datasource', 'skillset', 'index', 'indexer']  # installation order
 APP_COMPONENTS = ['app_bin', 'app_template']
 FILES_TO_TOKEN_REPLACE = ['.json', '.yaml']
