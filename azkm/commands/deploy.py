@@ -10,7 +10,7 @@ from firehelper import CommandRegistry
 # TODO: rethink pipeline/application deployment config + pattern
 
 
-PIPELINE_URL = 'https://raw.githubusercontent.com/frogrammer/azkm-pipelines/master/pipelines.json'
+CATALOG_URL = 'https://raw.githubusercontent.com/frogrammer/azkm-catalog/master/catalg.json'
 PIPELINE_COMPONENTS = ['datasource', 'skillset', 'index', 'indexer']  # installation order
 APP_COMPONENTS = ['app_bin', 'app_template']
 FILES_TO_TOKEN_REPLACE = ['.json', '.yaml']
@@ -81,7 +81,7 @@ def _load_application(url: str, pipeline_name: str, resource_attr: dict, km_id: 
 
     return app
 
-def deploy_pipeline(pipeline: str, km_id: str, pipeline_url = PIPELINE_URL):
+def deploy_pipeline(pipeline: str, km_id: str, catalog_url = CATALOG_URL):
     """Deploy pipeline.
 
     Args:
@@ -92,7 +92,7 @@ def deploy_pipeline(pipeline: str, km_id: str, pipeline_url = PIPELINE_URL):
     except:
         raise Exception('Error finding search appliance or cognitive services for environment {0}'.format(km_id))    
 
-    pipeline_resources = _load_pipeline(pipeline_url, pipeline, env_state)
+    pipeline_resources = _load_pipeline(catalog_url, pipeline, env_state)
     
     for p in PIPELINE_COMPONENTS:
         cogsearch.create_resource(p, pipeline, env_state['azurerm_search_service'][0], pipeline_resources[p])
@@ -100,7 +100,7 @@ def deploy_pipeline(pipeline: str, km_id: str, pipeline_url = PIPELINE_URL):
     print('\r\nDeployed imagenet pipeline to environment {0}.'.format(km_id))
 
 
-def deploy_application(pipeline: str, km_id: str, pipeline_url = PIPELINE_URL):
+def deploy_application(pipeline: str, km_id: str, catalog_url = CATALOG_URL):
     """Deploy application.
 
     Args:
@@ -111,7 +111,7 @@ def deploy_application(pipeline: str, km_id: str, pipeline_url = PIPELINE_URL):
     except:
         raise Exception('Error finding search appliance or cognitive services for environment {0}'.format(km_id))    
 
-    app_resources = _load_application(pipeline_url, pipeline, env_state, km_id)
+    app_resources = _load_application(catalog_url, pipeline, env_state, km_id)
     
     # copy azkm resources to file share
     az.run_command('storage', 'file', 'upload-batch', 

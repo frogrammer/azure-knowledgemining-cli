@@ -102,8 +102,8 @@ class KmStack(TerraformStack):
             tags = tags
             )
 
-        self.resources['storage'] = StorageAccount(self, _name_resource('storage'),
-            name=_name_resource('storage'),
+        self.resources['storage'] = StorageAccount(self, _name_resource('stor'),
+            name=_name_resource('stor'),
             depends_on=[self.resources['rg']],
             resource_group_name=self.resources['rg'].name,
             location=self.resources['rg'].location, 
